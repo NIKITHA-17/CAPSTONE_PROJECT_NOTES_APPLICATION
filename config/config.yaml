@@ -1,0 +1,12 @@
+ui:
+  base_url: "https://practice.expandtesting.com/notes/app/login"
+  browser: "chrome"
+  timeout: 30
+
+api:
+  base_url: "https://practice.expandtesting.com/notes/api"
+  timeout: 10
+
+test_user:
+  email: "adupalanikitha@gmail.com"
+  password: "Nikki@1234"

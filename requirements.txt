@@ -1,0 +1,10 @@
+selenium
+pytest
+pytest-xdist
+pytest-html
+allure-pytest
+webdriver-manager
+requests
+PyYAML
+python-dotenv
+pytest-rerunfailures

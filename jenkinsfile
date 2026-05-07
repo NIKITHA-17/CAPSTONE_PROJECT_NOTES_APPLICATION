@@ -1,0 +1,62 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout Source Code') {
+            steps {
+                echo 'Checking out source code...'
+            }
+        }
+
+        stage('Install Python Dependencies') {
+            steps {
+                bat 'python -m pip install --upgrade pip'
+                bat 'pip install -r requirements.txt'
+            }
+        }
+
+        stage('Start Selenium Grid') {
+            steps {
+                bat 'docker-compose up -d'
+            }
+        }
+
+        stage('Run Automation Tests') {
+            steps {
+                bat 'set GRID=true && python -m pytest tests -n 2 -v --reruns 1 --reruns-delay 2 --html=reports/final_report.html --self-contained-html --alluredir=allure-results'
+            }
+        }
+
+        stage('Publish HTML Report') {
+            steps {
+                publishHTML(target: [
+                    reportDir: 'reports',
+                    reportFiles: 'final_report.html',
+                    reportName: 'Pytest HTML Report',
+                    keepAll: true,
+                    alwaysLinkToLastBuild: true,
+                    allowMissing: false
+                ])
+            }
+        }
+
+        stage('Publish Allure Report') {
+            steps {
+                allure([
+                    includeProperties: false,
+                    jdk: '',
+                    properties: [],
+                    reportBuildPolicy: 'ALWAYS',
+                    results: [[path: 'allure-results']]
+                ])
+            }
+        }
+    }
+
+    post {
+        always {
+            archiveArtifacts artifacts: 'reports/*.html, logs/*.log, screenshots/*.png, allure-results/**', allowEmptyArchive: true
+            bat 'docker-compose down'
+        }
+    }
+}
