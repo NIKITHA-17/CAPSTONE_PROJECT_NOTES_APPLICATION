@@ -4,44 +4,38 @@ import allure
 
 from datetime import datetime
 
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
 
-from webdriver_manager.chrome import ChromeDriverManager
-
-
-@pytest.fixture
-def driver():
-
-    driver = webdriver.Chrome(
-        service=Service(
-            ChromeDriverManager().install()
-        )
-    )
-
-    driver.maximize_window()
-
-    yield driver
-
-    driver.quit()
+pytest_plugins = [
+    "fixtures.browser_fixture"
+]
 
 
 # Screenshot capture on failure
 @pytest.hookimpl(hookwrapper=True)
-def pytest_runtest_makereport(item, call):
+def pytest_runtest_makereport(
+    item,
+    call
+):
 
     outcome = yield
 
     report = outcome.get_result()
 
     # Capture screenshot only if test fails
-    if report.when == "call" and report.failed:
+    if (
+        report.when == "call"
+        and report.failed
+    ):
 
-        driver = item.funcargs.get("driver")
+        driver = item.funcargs.get(
+            "driver"
+        )
 
         if driver:
 
-            screenshots_dir = "screenshots"
+            screenshots_dir = (
+                "screenshots"
+            )
 
             os.makedirs(
                 screenshots_dir,
@@ -68,9 +62,11 @@ def pytest_runtest_makereport(item, call):
             allure.attach(
                 driver.get_screenshot_as_png(),
                 name=f"Screenshot_{timestamp}",
-                attachment_type=allure.attachment_type.PNG
+                attachment_type=
+                allure.attachment_type.PNG
             )
 
             print(
-                f"\nScreenshot saved: {screenshot_path}"
+                f"\nScreenshot saved: "
+                f"{screenshot_path}"
             )

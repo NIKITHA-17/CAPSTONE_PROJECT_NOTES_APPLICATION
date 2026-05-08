@@ -12,15 +12,31 @@ def test_get_notes_api():
 
     response = notes_service.get_notes()
 
+    response_time = (
+        response.elapsed.total_seconds()
+    )
+
     allure.attach(
         response.text,
         name="GET Notes API Response",
         attachment_type=allure.attachment_type.JSON
     )
 
+    allure.attach(
+        str(response_time),
+        name="API Response Time",
+        attachment_type=allure.attachment_type.TEXT
+    )
+
+    print(
+        f"\nAPI Response Time: "
+        f"{response_time} seconds"
+    )
+
     assert response.status_code == 200
 
-    assert response.elapsed.total_seconds() < 10
+    # Performance validation
+    assert response_time < 10
 
     data = response.json()
 
