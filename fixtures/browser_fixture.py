@@ -1,3 +1,5 @@
+import os
+
 import pytest
 
 from selenium import webdriver
@@ -24,15 +26,24 @@ def driver():
         "--disable-dev-shm-usage"
     )
 
-    driver = webdriver.Remote(
+    grid_url = os.getenv("GRID_URL")
 
-        command_executor=
-        "http://localhost:4444/wd/hub",
+    if grid_url:
 
-        options=chrome_options,
+        driver = webdriver.Remote(
 
-        keep_alive=True
-    )
+            command_executor=grid_url,
+
+            options=chrome_options,
+
+            keep_alive=True
+        )
+
+    else:
+
+        driver = webdriver.Chrome(
+            options=chrome_options
+        )
 
     driver.implicitly_wait(5)
 

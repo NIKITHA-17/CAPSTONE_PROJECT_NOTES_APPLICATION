@@ -2,9 +2,10 @@ pipeline {
     agent any
 
     stages {
+
         stage('Checkout Source Code') {
             steps {
-                echo 'Checking out source code...'
+                checkout scm
             }
         }
 
@@ -23,7 +24,7 @@ pipeline {
 
         stage('Run Automation Tests') {
             steps {
-                bat 'set GRID=true && python -m pytest tests -n 2 -v --reruns 1 --reruns-delay 2 --html=reports/final_report.html --self-contained-html --alluredir=allure-results'
+                bat 'set GRID_URL=http://localhost:4444/wd/hub && python -m pytest tests -n 2 -v --reruns 2 --reruns-delay 2 --html=reports/final_report.html --self-contained-html --alluredir=allure-results'
             }
         }
 

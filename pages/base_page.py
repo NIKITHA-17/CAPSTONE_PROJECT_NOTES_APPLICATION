@@ -181,3 +181,8 @@ class BasePage:
         return round(
             end_time - start_time,2
         )
+    def wait_for_page_ready(self):
+        def page_loaded(driver):
+            return driver.execute_script("return document.readyState") == "complete"
+
+        WebDriverWait(self.driver, 10).until(page_loaded)    
